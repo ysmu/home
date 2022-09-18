@@ -7,6 +7,8 @@ local keymap = vim.keymap
 vim.cmd [[packadd packer.nvim]]
 require("packer").startup(function(use)
   use {'akinsho/bufferline.nvim', requires = 'kyazdani42/nvim-web-devicons' }
+  use "ms-jpq/coq_nvim"
+  use { 'sindrets/diffview.nvim', requires = 'nvim-lua/plenary.nvim' }
   use "lewis6991/gitsigns.nvim"
   use { "nvim-lualine/lualine.nvim", requires = { "kyazdani42/nvim-web-devicons", opt = true } }
   use "wbthomason/packer.nvim"
@@ -66,7 +68,6 @@ require("telescope").setup {
 require("nvim_comment").setup {}
 require("nvim-treesitter").setup {}
 require("nvim-tree").setup {}
-
 require("nvim-tmux-navigation").setup {
   keybindings = {
     left = "<C-h>",
@@ -96,17 +97,18 @@ vim.cmd[[colorscheme tokyonight-night]]
 -- shortcuts
 keymap.set("n", "<leader>.", ":e ~/.config/nvim/init.lua<cr>")
 keymap.set("n", "<leader>n", toggleSidebar)
-keymap.set("n", "<C-_>", ":CommentToggle<cr>")
-keymap.set("v", "<C-_>", ":CommentToggle<cr>")
+keymap.set("n", "<leader>b", "<cmd>lua require('telescope.builtin').buffers()<cr>")
+keymap.set("n", "<leader>h", "<cmd>lua require('telescope.builtin').help_tags()<cr>")
+keymap.set("",  "<C-_>", ":CommentToggle<cr>")
 keymap.set("n", "<C-b>", ":NvimTreeToggle<cr>")
 keymap.set("n", "<C-p>", "<cmd>lua require('telescope.builtin').find_files({ hidden = true })<cr>")
 keymap.set("n", "<C-f>", "<cmd>lua require('telescope.builtin').live_grep()<cr>")
-keymap.set("", "<A-Left>", ":bprevious<cr>")
-keymap.set("", "<A-Right>", ":bnext<cr>")
-keymap.set("", "<C-w>", ":bd<cr>")
+keymap.set("", "<C-x>", "\"_dd")
+keymap.set("",  "<A-k>", ":m -2<cr>")
+keymap.set("",  "<A-Left>", ":bprevious<cr>")
+keymap.set("",  "<A-Right>", ":bnext<cr>")
+keymap.set("",  "<C-w>", ":bd<cr>")
 keymap.set("n", "<A-z>", ":set wrap!<cr>")
-keymap.set("n", "<leader>fb", "<cmd>lua require('telescope.builtin').buffers()<cr>")
-keymap.set("n", "<leader>fh", "<cmd>lua require('telescope.builtin').help_tags()<cr>")
 
 
 -- LSP shortcuts
@@ -116,10 +118,22 @@ local on_lsp_attach = function(client, bufnr)
   local bufopts = { noremap=true, silent=true, buffer=bufnr }
   vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
   vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
+  vim.keymap.set('n', 'gt', vim.lsp.buf.type_definition, bufopts)
   vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
-  vim.keymap.set('n', '<leader><space>', vim.lsp.buf.hover, bufopts)
-  vim.keymap.set('n', '<leader>D', vim.lsp.buf.type_definition, bufopts)
-  vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, bufopts)
   vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
+  vim.keymap.set('n', '<leader><space>', vim.lsp.buf.hover, bufopts)
+  vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, bufopts)
 end
-require("lspconfig").pyright.setup { on_attach = on_lsp_attach }
+require("lspconfig").pyright.setup {
+  on_attach = on_lsp_attach,
+  settings = {
+    python = {
+      analysis = {
+        autoSearchPaths = true,
+        diagnosticMode = "workspace",
+        useLibraryCodeForTypes = true,
+        typeCheckingMode = "off"
+      }
+    }
+  }
+}

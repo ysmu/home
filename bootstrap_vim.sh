@@ -1,5 +1,4 @@
 #!/bin/bash
-
 set -euo pipefail -o errtrace
 
 SCRIPT=$(realpath "$0")
