@@ -1,4 +1,5 @@
 local api = vim.api
+local fn = vim.fn
 local opt = vim.opt
 local g = vim.g
 local keymap = vim.keymap
@@ -55,9 +56,25 @@ opt.updatetime = 300                        -- faster completion (4000ms default
 opt.shortmess:append "c"
 opt.wrap = false                            -- display lines as one long line
 
+local python_path = fn.expand("~/.pyenv/versions/vim/bin/python")
+if fn.filereadable(python_path) == 1 then
+  g.python3_host_prog = python_path
+end
+
 
 -- plugins
+g.coq_settings = {
+  auto_start = 'shut-up',
+  keymap = { recommended = false },
+  clients = {
+    tmux = { enabled = false },
+    snippets = {
+      warn = {}
+    },
+  },
+}
 require("bufferline").setup {}
+require("coq")
 require("gitsigns").setup {}
 require("lualine").setup {}
 require("telescope").setup {
