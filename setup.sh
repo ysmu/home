@@ -43,3 +43,9 @@ if [ ! -d ~/.local/share/nvim/site/pack/packer/start/packer.nvim ]; then
 fi
 nvim --headless -c 'autocmd User PackerComplete quitall' -c 'PackerSync'
 
+
+# git
+if command -v git &> /dev/null; then
+  git config --global user.useConfigOnly true
+fi
+

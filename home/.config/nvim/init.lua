@@ -1,3 +1,4 @@
+local api = vim.api
 local opt = vim.opt
 local g = vim.g
 local keymap = vim.keymap
@@ -54,32 +55,32 @@ opt.wrap = false                            -- display lines as one long line
 
 
 -- plugins
-local ok, _ = pcall(require, "bufferline")
-if ok then
-  require("bufferline").setup {}
-  require("gitsigns").setup {}
-  require("lspconfig").pyright.setup {}
-  require("lualine").setup {}
-  require("telescope").setup {}
-  require("nvim_comment").setup {}
-  require("nvim-treesitter").setup {}
-  require("nvim-tree").setup {}
-
-  require("nvim-tmux-navigation").setup {
-    keybindings = {
-      left = "<C-h>",
-      down = "<C-j>",
-      up = "<C-k>",
-      right = "<C-l>",
-    }
+require("bufferline").setup {}
+require("gitsigns").setup {}
+require("lualine").setup {}
+require("telescope").setup {
+  defaults = {
+    file_ignore_patterns = { ".git", "node_modules" }
   }
-end
+}
+require("nvim_comment").setup {}
+require("nvim-treesitter").setup {}
+require("nvim-tree").setup {}
+
+require("nvim-tmux-navigation").setup {
+  keybindings = {
+    left = "<C-h>",
+    down = "<C-j>",
+    up = "<C-k>",
+    right = "<C-l>",
+  }
+}
 
 
 -- functions
 function toggleSidebar()
   if opt.number:get() then
-    opt.signcolumn = "no"
+    opt.signcolumn = "no" 
     opt.number = false
   else
     opt.signcolumn = "yes"
@@ -89,7 +90,7 @@ end
 
 
 -- theme
-vim.cmd[[silent! colorscheme tokyonight-night]]
+vim.cmd[[colorscheme tokyonight-night]]
 
 
 -- shortcuts
@@ -98,7 +99,7 @@ keymap.set("n", "<leader>n", toggleSidebar)
 keymap.set("n", "<C-_>", ":CommentToggle<cr>")
 keymap.set("v", "<C-_>", ":CommentToggle<cr>")
 keymap.set("n", "<C-b>", ":NvimTreeToggle<cr>")
-keymap.set("n", "<C-p>", "<cmd>lua require('telescope.builtin').find_files()<cr>")
+keymap.set("n", "<C-p>", "<cmd>lua require('telescope.builtin').find_files({ hidden = true })<cr>")
 keymap.set("n", "<C-f>", "<cmd>lua require('telescope.builtin').live_grep()<cr>")
 keymap.set("", "<A-Left>", ":bprevious<cr>")
 keymap.set("", "<A-Right>", ":bnext<cr>")
@@ -106,3 +107,19 @@ keymap.set("", "<C-w>", ":bd<cr>")
 keymap.set("n", "<A-z>", ":set wrap!<cr>")
 keymap.set("n", "<leader>fb", "<cmd>lua require('telescope.builtin').buffers()<cr>")
 keymap.set("n", "<leader>fh", "<cmd>lua require('telescope.builtin').help_tags()<cr>")
+
+
+-- LSP shortcuts
+local on_lsp_attach = function(client, bufnr)
+  api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+
+  local bufopts = { noremap=true, silent=true, buffer=bufnr }
+  vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
+  vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
+  vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
+  vim.keymap.set('n', '<leader><space>', vim.lsp.buf.hover, bufopts)
+  vim.keymap.set('n', '<leader>D', vim.lsp.buf.type_definition, bufopts)
+  vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, bufopts)
+  vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
+end
+require("lspconfig").pyright.setup { on_attach = on_lsp_attach }
