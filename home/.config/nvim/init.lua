@@ -61,6 +61,8 @@ if fn.filereadable(python_path) == 1 then
   g.python3_host_prog = python_path
 end
 
+local PLUGINS_INSTALLED, _ = pcall(require, "coq")
+
 
 -- plugins
 g.coq_settings = {
@@ -73,26 +75,28 @@ g.coq_settings = {
     },
   },
 }
-require("bufferline").setup {}
-require("coq")
-require("gitsigns").setup {}
-require("lualine").setup {}
-require("telescope").setup {
-  defaults = {
-    file_ignore_patterns = { ".git", "node_modules" }
+if PLUGINS_INSTALLED then
+  require("bufferline").setup {}
+  require("coq")
+  require("gitsigns").setup {}
+  require("lualine").setup {}
+  require("telescope").setup {
+    defaults = {
+      file_ignore_patterns = { ".git", "node_modules" }
+    }
   }
-}
-require("nvim_comment").setup {}
-require("nvim-treesitter").setup {}
-require("nvim-tree").setup {}
-require("nvim-tmux-navigation").setup {
-  keybindings = {
-    left = "<C-h>",
-    down = "<C-j>",
-    up = "<C-k>",
-    right = "<C-l>",
+  require("nvim_comment").setup {}
+  require("nvim-treesitter").setup {}
+  require("nvim-tree").setup {}
+  require("nvim-tmux-navigation").setup {
+    keybindings = {
+      left = "<C-h>",
+      down = "<C-j>",
+      up = "<C-k>",
+      right = "<C-l>",
+    }
   }
-}
+end
 
 
 -- functions
@@ -129,28 +133,30 @@ keymap.set("n", "<A-z>", ":set wrap!<cr>")
 
 
 -- LSP shortcuts
-local on_lsp_attach = function(client, bufnr)
-  api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+if PLUGINS_INSTALLED then
+  local on_lsp_attach = function(client, bufnr)
+    api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
 
-  local bufopts = { noremap=true, silent=true, buffer=bufnr }
-  vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
-  vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
-  vim.keymap.set('n', 'gt', vim.lsp.buf.type_definition, bufopts)
-  vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
-  vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
-  vim.keymap.set('n', '<leader><space>', vim.lsp.buf.hover, bufopts)
-  vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, bufopts)
-end
-require("lspconfig").pyright.setup {
-  on_attach = on_lsp_attach,
-  settings = {
-    python = {
-      analysis = {
-        autoSearchPaths = true,
-        diagnosticMode = "workspace",
-        useLibraryCodeForTypes = true,
-        typeCheckingMode = "off"
+    local bufopts = { noremap=true, silent=true, buffer=bufnr }
+    vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
+    vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
+    vim.keymap.set('n', 'gt', vim.lsp.buf.type_definition, bufopts)
+    vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
+    vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
+    vim.keymap.set('n', '<leader><space>', vim.lsp.buf.hover, bufopts)
+    vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, bufopts)
+  end
+  require("lspconfig").pyright.setup {
+    on_attach = on_lsp_attach,
+    settings = {
+      python = {
+        analysis = {
+          autoSearchPaths = true,
+          diagnosticMode = "workspace",
+          useLibraryCodeForTypes = true,
+          typeCheckingMode = "off"
+        }
       }
     }
   }
-}
+end

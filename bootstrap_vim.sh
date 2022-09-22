@@ -43,6 +43,19 @@ fi
 nvim --headless -c 'autocmd User PackerComplete quitall' -c 'PackerSync'
 
 
+# pyright
+curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+sudo apt-get install -y nodejs
+sudo npm install -g pyright
+
+
+# rg
+rm -rf ripgrep_13.0.0_amd64.deb
+wget https://github.com/BurntSushi/ripgrep/releases/download/13.0.0/ripgrep_13.0.0_amd64.deb 2> /dev/null
+sudo dpkg -i ripgrep_13.0.0_amd64.deb > /dev/null 2>&1
+rm -rf ripgrep_13.0.0_amd64.deb
+
+
 # git
 if command -v git &> /dev/null; then
   git config --global user.useConfigOnly true
