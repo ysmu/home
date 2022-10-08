@@ -37,6 +37,7 @@ opt.pumheight = 10                          -- pop up menu height
 opt.shiftwidth = 2                          -- the number of spaces inserted for each indentation
 opt.tabstop = 2                             -- insert 2 spaces for a tab
 opt.laststatus = 3
+opt.mouse = ""                              -- disable mouse
 opt.number = true                           -- set numbered lines
 opt.numberwidth = 4                         -- set number column width to 2 {default 4}
 opt.ruler = false
