@@ -8,7 +8,6 @@ local keymap = vim.keymap
 vim.cmd [[packadd packer.nvim]]
 require("packer").startup(function(use)
   use {'akinsho/bufferline.nvim', requires = 'kyazdani42/nvim-web-devicons' }
-  use "ms-jpq/coq_nvim"
   use { 'sindrets/diffview.nvim', requires = 'nvim-lua/plenary.nvim' }
   use "lewis6991/gitsigns.nvim"
   use { "nvim-lualine/lualine.nvim", requires = { "kyazdani42/nvim-web-devicons", opt = true } }
@@ -62,23 +61,12 @@ if fn.filereadable(python_path) == 1 then
   g.python3_host_prog = python_path
 end
 
-local PLUGINS_INSTALLED, _ = pcall(require, "coq")
+local PLUGINS_INSTALLED, _ = pcall(require, "bufferline")
 
 
 -- plugins
-g.coq_settings = {
-  auto_start = 'shut-up',
-  keymap = { recommended = false },
-  clients = {
-    tmux = { enabled = false },
-    snippets = {
-      warn = {}
-    },
-  },
-}
 if PLUGINS_INSTALLED then
   require("bufferline").setup {}
-  require("coq")
   require("gitsigns").setup {}
   require("lualine").setup {}
   require("telescope").setup {
