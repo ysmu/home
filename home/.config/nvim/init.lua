@@ -84,8 +84,10 @@ if PLUGINS_INSTALLED then
   require("gitsigns").setup {}
   require("lualine").setup {}
   require("telescope").setup {
-    defaults = {
-      file_ignore_patterns = { ".git", "node_modules" }
+    pickers = {
+      find_files = {
+        find_command = {'rg', '--files', '--hidden', '-g', '!.git', '-g', '!node_modules'},
+      }
     }
   }
   require("nvim_comment").setup {}
