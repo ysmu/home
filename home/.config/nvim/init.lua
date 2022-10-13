@@ -66,7 +66,21 @@ local PLUGINS_INSTALLED, _ = pcall(require, "bufferline")
 
 -- plugins
 if PLUGINS_INSTALLED then
-  require("bufferline").setup {}
+  require("bufferline").setup {
+    options = {
+      diagnostics = "nvim_lsp",
+      show_close_icon = false,
+      show_buffer_close_icons = false,
+      offsets = {
+        {
+          filetype = "NvimTree",
+          text = "File Explorer",
+          highlight = "Directory",
+          separator = true
+        }
+      }
+    }
+  }
   require("gitsigns").setup {}
   require("lualine").setup {}
   require("telescope").setup {
@@ -109,6 +123,7 @@ keymap.set("n", "<leader>.", ":e ~/.config/nvim/init.lua<cr>")
 keymap.set("n", "<leader>n", toggleSidebar)
 keymap.set("n", "<leader>b", "<cmd>lua require('telescope.builtin').buffers()<cr>")
 keymap.set("n", "<leader>h", "<cmd>lua require('telescope.builtin').help_tags()<cr>")
+keymap.set("n", "<leader>w", ":NvimTreeFindFile<cr>")
 keymap.set("",  "<C-_>", ":CommentToggle<cr>")
 keymap.set("n", "<C-b>", ":NvimTreeToggle<cr>")
 keymap.set("n", "<C-p>", "<cmd>lua require('telescope.builtin').find_files({ hidden = true })<cr>")
@@ -119,6 +134,7 @@ keymap.set("",  "<A-Left>", ":bprevious<cr>")
 keymap.set("",  "<A-Right>", ":bnext<cr>")
 keymap.set("",  "<C-w>", ":bd<cr>")
 keymap.set("n", "<A-z>", ":set wrap!<cr>")
+keymap.set('i', '<tab>', [[pumvisible() ? (complete_info(["selected"]).selected == -1 ? "<c-n><c-y>" : "<c-y>") : "<tab>"]], { expr = true })
 
 
 -- LSP shortcuts
