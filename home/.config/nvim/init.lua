@@ -86,7 +86,7 @@ if PLUGINS_INSTALLED then
   require("telescope").setup {
     pickers = {
       find_files = {
-        find_command = {'rg', '--files', '--hidden', '-g', '!.git', '-g', '!node_modules'},
+        find_command = {'rg', '--files', '--hidden', '-g', '!.git'},
       }
     }
   }
@@ -132,6 +132,8 @@ keymap.set("n", "<C-p>", "<cmd>lua require('telescope.builtin').find_files({ hid
 keymap.set("n", "<C-f>", "<cmd>lua require('telescope.builtin').live_grep()<cr>")
 keymap.set("", "<C-x>", "\"_dd")
 keymap.set("",  "<A-k>", ":m -2<cr>")
+keymap.set("",  "<A-Up>", ":move -2<cr>")
+keymap.set("",  "<A-Down>", ":move +1<cr>")
 keymap.set("",  "<A-Left>", ":bprevious<cr>")
 keymap.set("",  "<A-Right>", ":bnext<cr>")
 keymap.set("",  "<C-w>", ":bd<cr>")
