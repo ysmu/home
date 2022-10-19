@@ -93,14 +93,7 @@ if PLUGINS_INSTALLED then
   require("nvim_comment").setup {}
   require("nvim-treesitter").setup {}
   require("nvim-tree").setup {}
-  require("nvim-tmux-navigation").setup {
-    keybindings = {
-      left = "<C-h>",
-      down = "<C-j>",
-      up = "<C-k>",
-      right = "<C-l>",
-    }
-  }
+  require("nvim-tmux-navigation").setup {}  -- Don't setup keybindings here because they are bound to normal mode.
 end
 
 
@@ -127,18 +120,22 @@ keymap.set("n", "<leader>b", "<cmd>lua require('telescope.builtin').buffers()<cr
 keymap.set("n", "<leader>h", "<cmd>lua require('telescope.builtin').help_tags()<cr>")
 keymap.set("n", "<leader>w", ":NvimTreeFindFile<cr>")
 keymap.set("",  "<C-_>", ":CommentToggle<cr>")
-keymap.set("n", "<C-b>", ":NvimTreeToggle<cr>")
+keymap.set("n", "<C-d>", ":NvimTreeToggle<cr>")
 keymap.set("n", "<C-p>", "<cmd>lua require('telescope.builtin').find_files({ hidden = true })<cr>")
 keymap.set("n", "<C-f>", "<cmd>lua require('telescope.builtin').live_grep()<cr>")
-keymap.set("", "<C-x>", "\"_dd")
+keymap.set("",  "<C-x>", "\"_dd")
 keymap.set("",  "<A-k>", ":m -2<cr>")
 keymap.set("",  "<A-Up>", ":move -2<cr>")
 keymap.set("",  "<A-Down>", ":move +1<cr>")
 keymap.set("",  "<A-Left>", ":bprevious<cr>")
 keymap.set("",  "<A-Right>", ":bnext<cr>")
+keymap.set("",  "<C-h>", ":lua require'nvim-tmux-navigation'.NvimTmuxNavigateLeft()<cr>")
+keymap.set("",  "<C-j>", ":lua require'nvim-tmux-navigation'.NvimTmuxNavigateDown()<cr>")
+keymap.set("",  "<C-k>", ":lua require'nvim-tmux-navigation'.NvimTmuxNavigateUp()<cr>")
+keymap.set("",  "<C-l>", ":lua require'nvim-tmux-navigation'.NvimTmuxNavigateRight()<cr>")
 keymap.set("",  "<C-w>", ":bd<cr>")
 keymap.set("n", "<A-z>", ":set wrap!<cr>")
-keymap.set('i', '<tab>', [[pumvisible() ? (complete_info(["selected"]).selected == -1 ? "<c-n><c-y>" : "<c-y>") : "<tab>"]], { expr = true })
+keymap.set("i", "<tab>", [[pumvisible() ? (complete_info(["selected"]).selected == -1 ? "<c-n><c-y>" : "<c-y>") : "<tab>"]], { expr = true })
 
 
 -- LSP shortcuts
