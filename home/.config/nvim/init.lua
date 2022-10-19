@@ -110,7 +110,7 @@ end
 
 
 -- theme
-vim.cmd[[colorscheme tokyonight-night]]
+vim.cmd[[silent! colorscheme tokyonight-night]]
 
 
 -- shortcuts
@@ -120,7 +120,7 @@ keymap.set("n", "<leader>b", "<cmd>lua require('telescope.builtin').buffers()<cr
 keymap.set("n", "<leader>h", "<cmd>lua require('telescope.builtin').help_tags()<cr>")
 keymap.set("n", "<leader>w", ":NvimTreeFindFile<cr>")
 keymap.set("",  "<C-_>", ":CommentToggle<cr>")
-keymap.set("n", "<C-e>", ":NvimTreeToggle<cr>")
+keymap.set("n", "<C-b>", ":NvimTreeToggle<cr>")
 keymap.set("n", "<C-p>", "<cmd>lua require('telescope.builtin').find_files({ hidden = true })<cr>")
 keymap.set("n", "<C-f>", "<cmd>lua require('telescope.builtin').live_grep()<cr>")
 keymap.set("",  "<C-x>", "\"_dd")
