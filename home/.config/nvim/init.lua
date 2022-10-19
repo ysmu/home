@@ -19,6 +19,7 @@ require("packer").startup(function(use)
   use "alexghergh/nvim-tmux-navigation"
   use { "nvim-telescope/telescope.nvim", requires = "nvim-lua/plenary.nvim" }
   use "folke/tokyonight.nvim"
+  use { "hrsh7th/nvim-cmp", requires = { "hrsh7th/cmp-nvim-lsp", "hrsh7th/cmp-nvim-lsp-signature-help" } }
 end)
 
 
@@ -30,6 +31,7 @@ opt.conceallevel = 0                        -- so that `` is visible in markdown
 opt.cursorline = true                       -- highlight the current line
 opt.expandtab = true                        -- convert tabs to spaces
 opt.fileencoding = "utf-8"                  -- the encoding written to a file
+opt.formatoptions = "cq"                    -- No automatic wrapping
 opt.hlsearch = true                         -- highlight all matches on previous search pattern
 opt.ignorecase = true                       -- ignore case in search patterns
 opt.pumheight = 10                          -- pop up menu height
@@ -50,6 +52,7 @@ opt.smartindent = true                      -- make indenting smarter again
 opt.splitbelow = true                       -- force all horizontal splits to go below current window
 opt.splitright = true                       -- force all vertical splits to go to the right of current window
 opt.termguicolors = true                    -- set term gui colors (most terminals support this)
+opt.textwidth = 120                         -- autowrapping is determined by formatoptions
 opt.timeoutlen = 1000                       -- time to wait for a mapped sequence to complete (in milliseconds)
 opt.undofile = true                         -- enable persistent undo
 opt.updatetime = 300                        -- faster completion (4000ms default)
@@ -124,6 +127,7 @@ keymap.set("n", "<C-b>", ":NvimTreeToggle<cr>")
 keymap.set("n", "<C-p>", "<cmd>lua require('telescope.builtin').find_files({ hidden = true })<cr>")
 keymap.set("n", "<C-f>", "<cmd>lua require('telescope.builtin').live_grep()<cr>")
 keymap.set("",  "<C-x>", "\"_dd")
+keymap.set("",  "<A-q>", "gq}")
 keymap.set("",  "<A-k>", ":m -2<cr>")
 keymap.set("",  "<A-Up>", ":move -2<cr>")
 keymap.set("",  "<A-Down>", ":move +1<cr>")
@@ -135,24 +139,62 @@ keymap.set("",  "<C-k>", ":lua require'nvim-tmux-navigation'.NvimTmuxNavigateUp(
 keymap.set("",  "<C-l>", ":lua require'nvim-tmux-navigation'.NvimTmuxNavigateRight()<cr>", { silent = true })
 keymap.set("",  "<C-w>", ":bd<cr>")
 keymap.set("n", "<A-z>", ":set wrap!<cr>")
-keymap.set("i", "<tab>", [[pumvisible() ? (complete_info(["selected"]).selected == -1 ? "<c-n><c-y>" : "<c-y>") : "<tab>"]], { expr = true })
 
 
 -- LSP shortcuts
 if PLUGINS_INSTALLED then
   local on_lsp_attach = function(client, bufnr)
-    api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+    api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
 
     local bufopts = { noremap=true, silent=true, buffer=bufnr }
-    vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
-    vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
-    vim.keymap.set('n', 'gt', vim.lsp.buf.type_definition, bufopts)
-    vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
-    vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
-    vim.keymap.set('n', '<leader><space>', vim.lsp.buf.hover, bufopts)
-    vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, bufopts)
+    keymap.set("n", "gD", vim.lsp.buf.declaration, bufopts)
+    keymap.set("n", "gd", vim.lsp.buf.definition, bufopts)
+    keymap.set("n", "gt", vim.lsp.buf.type_definition, bufopts)
+    keymap.set("n", "gi", vim.lsp.buf.implementation, bufopts)
+    keymap.set("n", "gr", vim.lsp.buf.references, bufopts)
+    keymap.set("n", "<leader><space>", vim.lsp.buf.hover, bufopts)
+    keymap.set("n", "<leader>rn", vim.lsp.buf.rename, bufopts)
   end
+  local cmp = require("cmp")
+  local cmp_select_opts = { behavior = cmp.SelectBehavior.Select }
+  require("cmp").setup {
+    completion = {
+      completeopt = 'menu, menuone, noinsert'
+    },
+    sources = {
+      { name = "path" },
+      { name = "nvim_lsp" },
+      { name = "nvim_lsp_signature_help" },
+      { name = "buffer", keyword_length = 3 },
+    },
+    window = {
+      documentation = cmp.config.window.bordered()
+    },
+    formatting = {
+      fields = {"menu", "abbr", "kind"},
+    },
+    mapping = {
+      ["<Up>"] = cmp.mapping.select_prev_item(cmp_select_opts),
+      ["<Down>"] = cmp.mapping.select_next_item(cmp_select_opts),
+      ["<Tab>"] = cmp.mapping(function(fallback)
+        if cmp.visible() then
+          cmp.confirm({ select = true })
+        else
+          fallback()
+        end
+      end, {"i", "s"}),
+      ["<cr>"] = cmp.mapping(function(fallback)
+        if cmp.visible() then
+          cmp.confirm({ select = true })
+        else
+          fallback()
+        end
+      end, {"i", "s"}),
+    },
+  }
+  local capabilities = require("cmp_nvim_lsp").default_capabilities()
   require("lspconfig").pyright.setup {
+    capabilities = capabilities,
     on_attach = on_lsp_attach,
     settings = {
       python = {
@@ -165,4 +207,5 @@ if PLUGINS_INSTALLED then
       }
     }
   }
+
 end
