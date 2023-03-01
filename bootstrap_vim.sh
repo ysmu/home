@@ -57,6 +57,9 @@ rm -rf ripgrep_13.0.0_amd64.deb
 
 
 # git
+sudo add-apt-repository -y ppa:git-core/ppa
+sudo apt update
+sudo apt install -y git
 if command -v git &> /dev/null; then
   git config --global user.useConfigOnly true
 fi

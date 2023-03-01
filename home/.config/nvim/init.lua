@@ -58,6 +58,7 @@ opt.undofile = true                         -- enable persistent undo
 opt.updatetime = 300                        -- faster completion (4000ms default)
 opt.shortmess:append "c"
 opt.wrap = false                            -- display lines as one long line
+opt.fillchars = opt.fillchars + "diff:/"    -- get diagonals instead of the default dash signs in diff views
 
 local python_path = fn.expand("~/.pyenv/versions/vim/bin/python")
 if fn.filereadable(python_path) == 1 then
@@ -84,12 +85,38 @@ if PLUGINS_INSTALLED then
       }
     }
   }
-  require("gitsigns").setup {}
+  require("diffview").setup {
+    enhanced_diff_hl = true,
+  }
+  require("gitsigns").setup {
+    current_line_blame_opts = {
+      delay = 0,
+    },
+    on_attach = function()
+      local gs = package.loaded.gitsigns
+
+      keymap.set("n", "[c", function()
+        if vim.wo.diff then return "[c" end
+        vim.schedule(function() gs.prev_hunk() end)
+        return "<Ignore>"
+      end, {expr=true})
+
+      keymap.set("n", "]c", function()
+        if vim.wo.diff then return "c]" end
+        vim.schedule(function() gs.next_hunk() end)
+        return "<Ignore>"
+      end, {expr=true})
+
+      keymap.set("n", "<leader>gh", ":Gitsigns preview_hunk<cr>")
+      keymap.set("n", "<leader>gg", function() gs.blame_line{ full=true } end)
+      keymap.set("n", "tb", ":Gitsigns toggle_current_line_blame<cr>")
+    end
+  }
   require("lualine").setup {}
   require("telescope").setup {
     pickers = {
       find_files = {
-        find_command = {'rg', '--files', '--hidden', '-g', '!.git'},
+        find_command = {"rg", "--files", "--hidden", "-g", "!.git"},
       }
     }
   }
@@ -118,7 +145,7 @@ vim.cmd[[silent! colorscheme tokyonight-night]]
 
 -- shortcuts
 keymap.set("n", "<leader>.", ":e ~/.config/nvim/init.lua<cr>")
-keymap.set("n", "<leader>n", toggleSidebar)
+keymap.set("n", "tn", toggleSidebar)
 keymap.set("n", "<leader>b", "<cmd>lua require('telescope.builtin').buffers()<cr>")
 keymap.set("n", "<leader>h", "<cmd>lua require('telescope.builtin').help_tags()<cr>")
 keymap.set("n", "<leader>w", ":NvimTreeFindFile<cr>")
@@ -139,6 +166,12 @@ keymap.set("",  "<C-k>", ":lua require'nvim-tmux-navigation'.NvimTmuxNavigateUp(
 keymap.set("",  "<C-l>", ":lua require'nvim-tmux-navigation'.NvimTmuxNavigateRight()<cr>", { silent = true })
 keymap.set("",  "<C-w>", ":b#<bar>bd#<cr>", { silent = true })
 keymap.set("n", "<A-z>", ":set wrap!<cr>", { silent = true })
+keymap.set("n", "<leader>gh", ":DiffviewFileHistory<cr>")
+keymap.set("n", "<leader>gD", ":DiffviewOpen<cr>")
+keymap.set("n", "<leader>gd", function()
+  vim.cmd[[silent! DiffviewOpen -- %]]
+  vim.cmd[[silent! DiffviewToggleFiles]]
+end)
 
 
 -- LSP shortcuts
@@ -157,7 +190,7 @@ if PLUGINS_INSTALLED then
   end
   local cmp = require("cmp")
   local cmp_select_opts = { behavior = cmp.SelectBehavior.Select }
-  require("cmp").setup {
+  cmp.setup {
     completion = {
       completeopt = 'menu, menuone, noinsert'
     },
