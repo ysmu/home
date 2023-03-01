@@ -107,7 +107,7 @@ if PLUGINS_INSTALLED then
         return "<Ignore>"
       end, {expr=true})
 
-      keymap.set("n", "<leader>gh", ":Gitsigns preview_hunk<cr>")
+      keymap.set("n", "<leader>gp", ":Gitsigns preview_hunk<cr>")
       keymap.set("n", "<leader>gg", function() gs.blame_line{ full=true } end)
       keymap.set("n", "tb", ":Gitsigns toggle_current_line_blame<cr>")
     end
