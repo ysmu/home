@@ -14,6 +14,7 @@ require("packer").startup(function(use)
   use "wbthomason/packer.nvim"
   use "terrortylor/nvim-comment"
   use "neovim/nvim-lspconfig"
+  use { "L3MON4D3/LuaSnip", tag = "v<CurrentMajor>.*" }
   use "nvim-treesitter/nvim-treesitter"
   use "kyazdani42/nvim-tree.lua"
   use "alexghergh/nvim-tmux-navigation"
@@ -191,6 +192,11 @@ if PLUGINS_INSTALLED then
   local cmp = require("cmp")
   local cmp_select_opts = { behavior = cmp.SelectBehavior.Select }
   cmp.setup {
+    snippet = {
+      expand = function(args)
+        require('luasnip').lsp_expand(args.body)
+      end,
+    },
     completion = {
       completeopt = 'menu, menuone, noinsert'
     },
@@ -225,6 +231,9 @@ if PLUGINS_INSTALLED then
       end, {"i", "s"}),
     },
   }
+
+  -- LSPs
+  local util = require("lspconfig/util")
   local capabilities = require("cmp_nvim_lsp").default_capabilities()
   require("lspconfig").pyright.setup {
     capabilities = capabilities,
@@ -239,6 +248,21 @@ if PLUGINS_INSTALLED then
         }
       }
     }
+  }
+  require("lspconfig").gopls.setup {
+    capabilities = capabilities,
+    on_attach = on_lsp_attach,
+    cmd = {"gopls", "serve"},
+    filetypes = {"go", "gomod"},
+    root_dir = util.root_pattern("go.work", "go.mod", ".git"),
+    settings = {
+      gopls = {
+        analyses = {
+          unusedparams = true,
+        },
+        staticcheck = true,
+      },
+    },
   }
 
 end
