@@ -28,12 +28,13 @@ ln -s "$SCRIPT_PATH/home/.tmux.conf" ~/.tmux.conf
 # neovim
 echo "Installing neovim..."
 rm -f nvim-linux64.deb
-wget https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.deb 2> /dev/null
-sudo dpkg -i nvim-linux64.deb > /dev/null 2>&1
-rm nvim-linux64.deb
-sudo update-alternatives --install /usr/bin/vi vi /usr/bin/nvim 60
-sudo update-alternatives --install /usr/bin/vim vim /usr/bin/nvim 60
-sudo update-alternatives --install /usr/bin/editor editor /usr/bin/nvim 60
+wget https://github.com/neovim/neovim/releases/download/stable/nvim.appimage
+chmod +x nvim.appimage
+sudo mkdir -p /usr/local/bin
+sudo mv nvim.appimage /usr/local/bin/nvim
+sudo update-alternatives --install /usr/bin/vi vi /usr/local/bin/nvim 70
+sudo update-alternatives --install /usr/bin/vim vim /usr/local/bin/nvim 70
+sudo update-alternatives --install /usr/bin/editor editor /usr/local/bin/nvim 70
 backup_original ~/.config/nvim/init.lua
 mkdir -p ~/.config/nvim
 ln -s "$SCRIPT_PATH/home/.config/nvim/init.lua" ~/.config/nvim/init.lua
