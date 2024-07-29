@@ -47,8 +47,8 @@ nvim --headless -c 'autocmd User PackerComplete quitall' -c 'PackerSync'
 # Install node
 if ! command -v npm &> /dev/null; then
   echo "Installing node..."
-  curl -fsSL https://deb.nodesource.com/setup_22.x | bash - &&\
-  apt-get install -y nodejs
+  curl -fsSL https://deb.nodesource.com/setup_22.x | sudo bash - &&\
+  sudo apt-get install -y nodejs
 fi
 
 
