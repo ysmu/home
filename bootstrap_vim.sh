@@ -28,13 +28,11 @@ ln -s "$SCRIPT_PATH/home/.tmux.conf" ~/.tmux.conf
 # neovim
 echo "Installing neovim..."
 rm -f nvim-linux64.deb
-wget https://github.com/neovim/neovim/releases/download/stable/nvim.appimage
-chmod +x nvim.appimage
-sudo mkdir -p /usr/local/bin
-sudo mv nvim.appimage /usr/local/bin/nvim
-sudo update-alternatives --install /usr/bin/vi vi /usr/local/bin/nvim 70
-sudo update-alternatives --install /usr/bin/vim vim /usr/local/bin/nvim 70
-sudo update-alternatives --install /usr/bin/editor editor /usr/local/bin/nvim 70
+wget https://github.com/neovim/neovim-releases/releases/download/stable/nvim-linux-x86_64.deb
+sudo dpkg -i nvim-linux-x86_64.deb
+sudo update-alternatives --install /usr/bin/vi vi "$(which nvim)" 70
+sudo update-alternatives --install /usr/bin/vim vim "$(which nvim)" 70
+sudo update-alternatives --install /usr/bin/editor editor "$(which nvim)" 70
 backup_original ~/.config/nvim/init.lua
 mkdir -p ~/.config/nvim
 ln -s "$SCRIPT_PATH/home/.config/nvim/init.lua" ~/.config/nvim/init.lua
@@ -63,11 +61,12 @@ sudo dpkg -i ripgrep_13.0.0_amd64.deb > /dev/null 2>&1
 rm -rf ripgrep_13.0.0_amd64.deb
 
 
-# git
-sudo add-apt-repository -y ppa:git-core/ppa
-sudo apt update
-sudo apt install -y git
-if command -v git &> /dev/null; then
-  git config --global user.useConfigOnly true
+# git - not available on work machine
+if [ -z "$RCALL_JOB_NAME" ]; then
+  sudo add-apt-repository -y ppa:git-core/ppa
+  sudo apt update
+  sudo apt install -y git
+  if command -v git &> /dev/null; then
+    git config --global user.useConfigOnly true
+  fi
 fi
-
