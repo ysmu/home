@@ -48,7 +48,7 @@ if [ "${ARCH}" = "amd64" ]; then
   rm -f nvim-linux-x86_64.deb
   wget -q https://github.com/neovim/neovim-releases/releases/download/stable/nvim-linux-x86_64.deb
   sudo apt-get update -y
-  sudo apt-get install -y ./nvim-linux-x86_64.deb
+  sudo dpkg -i nvim-linux-x86_64.deb
   rm -f nvim-linux-x86_64.deb
   NVIM_BIN="$(command -v nvim)"
 elif [ "${ARCH}" = "arm64" ]; then

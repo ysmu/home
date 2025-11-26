@@ -122,7 +122,8 @@ if PLUGINS_INSTALLED then
     }
   }
   require("nvim_comment").setup {}
-  require("nvim-treesitter").setup {}
+  -- Treesitter: use the correct configs module
+  require("nvim-treesitter.configs").setup {}
   require("nvim-tree").setup {}
   require("nvim-tmux-navigation").setup {}  -- Don't setup keybindings here because they are bound to normal mode.
 end
@@ -131,7 +132,7 @@ end
 -- functions
 function toggleSidebar()
   if opt.number:get() then
-    opt.signcolumn = "no" 
+    opt.signcolumn = "no"
     opt.number = false
   else
     opt.signcolumn = "yes"
@@ -156,7 +157,7 @@ keymap.set("n", "<C-p>", "<cmd>lua require('telescope.builtin').find_files({ hid
 keymap.set("n", "<C-f>", "<cmd>lua require('telescope.builtin').live_grep()<cr>", { silent = true })
 keymap.set("",  "<C-x>", "\"_dd", { silent = true })
 keymap.set("",  "<A-q>", "gq}", { silent = true })
-keymap.set("",  "<A-k>", ":m -2<cr>, { silent = true }")
+keymap.set("",  "<A-k>", ":m -2<cr>", { silent = true })
 keymap.set("",  "<A-Up>", ":move -2<cr>", { silent = true })
 keymap.set("",  "<A-Down>", ":move +1<cr>", { silent = true })
 keymap.set("",  "<A-Left>", ":bprevious<cr>", { silent = true })
@@ -175,7 +176,7 @@ keymap.set("n", "<leader>gd", function()
 end)
 
 
--- LSP shortcuts
+-- LSP
 if PLUGINS_INSTALLED then
   local on_lsp_attach = function(client, bufnr)
     api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
@@ -189,6 +190,7 @@ if PLUGINS_INSTALLED then
     keymap.set("n", "<leader><space>", vim.lsp.buf.hover, bufopts)
     keymap.set("n", "<leader>rn", vim.lsp.buf.rename, bufopts)
   end
+
   local cmp = require("cmp")
   local cmp_select_opts = { behavior = cmp.SelectBehavior.Select }
   cmp.setup {
@@ -232,10 +234,9 @@ if PLUGINS_INSTALLED then
     },
   }
 
-  -- LSPs
-  local util = require("lspconfig/util")
   local capabilities = require("cmp_nvim_lsp").default_capabilities()
-  require("lspconfig").pyright.setup {
+
+  vim.lsp.config("pyright", {
     capabilities = capabilities,
     on_attach = on_lsp_attach,
     settings = {
@@ -247,29 +248,11 @@ if PLUGINS_INSTALLED then
           typeCheckingMode = "off"
         }
       }
-    }
-  }
-  require("lspconfig").gopls.setup {
-    capabilities = capabilities,
-    on_attach = on_lsp_attach,
-    cmd = {"gopls", "serve"},
-    filetypes = {"go", "gomod"},
-    root_dir = util.root_pattern("go.work", "go.mod", ".git"),
-    settings = {
-      gopls = {
-        analyses = {
-          unusedparams = true,
-        },
-        staticcheck = true,
-      },
     },
-  }
-
-  -- Go
-  api.nvim_create_autocmd("BufWritePre", {
-    pattern = { "*.go" },
-    callback = function()
-      vim.lsp.buf.formatting_sync(nil, 3000)
-    end,
+    filetypes = { "python" },
+    root_markers = { "pyproject.toml", "setup.py", "setup.cfg", "requirements.txt", ".git" },
   })
+
+  vim.lsp.enable({ "pyright" })
 end
+
